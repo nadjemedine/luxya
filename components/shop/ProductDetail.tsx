@@ -8,9 +8,10 @@ import { useCart } from '@/context/CartContext';
 interface ProductDetailProps {
   product: Product;
   onBack: () => void;
+  onNavigate: (page: string) => void;
 }
 
-export default function ProductDetail({ product, onBack }: ProductDetailProps) {
+export default function ProductDetail({ product, onBack, onNavigate }: ProductDetailProps) {
   const { lang, t } = useLang();
   const { addToCart, toggleFavorite, isFavorite } = useCart();
   const [selectedImg, setSelectedImg] = useState(0);
@@ -144,13 +145,24 @@ export default function ProductDetail({ product, onBack }: ProductDetailProps) {
         </div>
       )}
 
-      {/* Add to Cart (becomes static on desktop via CSS) */}
-      <div className="product-detail-add-to-cart-bar">
+      {/* Add to Cart Options */}
+      <div className="product-detail-add-to-cart-bar" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <button
           className="btn btn-primary btn-full"
+          disabled={!product.inStock}
+          onClick={() => {
+            addToCart(product, 1, selectedSize || undefined, selectedColor || undefined);
+            onNavigate('checkout');
+          }}
+          style={{ background: 'var(--gold)', borderColor: 'var(--gold)', color: 'var(--aubergine-dark)', fontSize: '16px' }}
+        >
+          {lang === 'fr' ? '🌟 Commander directement' : '🌟 اطلب مباشرة'}
+        </button>
+        <button
+          className="btn btn-outline btn-full"
           disabled={!product.inStock || added}
           onClick={handleAddToCart}
-          style={{ background: added ? '#48bb78' : undefined }}
+          style={added ? { background: '#48bb78', borderColor: '#48bb78', color: 'white' } : {}}
         >
           {added ? (lang === 'fr' ? '✓ Ajouté !' : '✓ تمت الإضافة!') : t('product.addToCart')}
         </button>

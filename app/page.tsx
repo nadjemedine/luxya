@@ -34,7 +34,7 @@ export default function App() {
       case 'boutique': return <BoutiquePage onNavigate={navigate} initialCategoryId={navData?.categoryId} />;
       case 'favorites': return <FavoritesPage onNavigate={navigate} />;
       case 'product': return selectedProduct
-        ? <ProductDetail product={selectedProduct} onBack={() => navigate('boutique')} />
+        ? <ProductDetail product={selectedProduct} onBack={() => navigate('boutique')} onNavigate={navigate} />
         : <BoutiquePage onNavigate={navigate} />;
       case 'contact': return <ContactPage />;
       case 'checkout': return <CheckoutPage />;
