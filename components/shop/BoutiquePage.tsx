@@ -67,9 +67,8 @@ export default function BoutiquePage({ onNavigate, initialCategoryId }: Boutique
         </div>
       )}
 
-      <div className="page-header" style={{ paddingTop: '20px' }}>
-        <h1 className="page-title">{t('nav.boutique')}</h1>
-      </div>
+
+
 
       {/* Category Filter */}
       {categories.length > 0 && (
