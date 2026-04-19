@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "boutique": "البوتيك",
+    "favorite": "المفضلة",
+    "search": "بحث",
+    "cart": "السلة",
+    "menu": "القائمة"
+  },
+  "announcement": "مرحباً بكم في Luxya Shop - شحن مجاني ابتداءً من 10000 دج",
+  "hero": {
+    "title": "الأناقة في متناول يدك",
+    "subtitle": "اكتشفي مجموعتنا الحصرية",
+    "cta": "اكتشفي"
+  },
+  "sections": {
+    "featured": "منتجات مميزة",
+    "newArrivals": "وصل حديثاً",
+    "categories": "فئاتنا",
+    "sale": "تخفيضات"
+  },
+  "product": {
+    "addToCart": "أضف إلى السلة",
+    "addToFavorite": "أضف إلى المفضلة",
+    "inStock": "متوفر",
+    "outOfStock": "نفذ المخزون",
+    "size": "المقاس",
+    "color": "اللون",
+    "description": "الوصف",
+    "reviews": "التقييمات",
+    "new": "جديد",
+    "sale": "تخفيض"
+  },
+  "cart": {
+    "title": "سلتي",
+    "empty": "سلتك فارغة",
+    "total": "المجموع",
+    "checkout": "إتمام الطلب",
+    "continueShopping": "مواصلة التسوق",
+    "remove": "حذف",
+    "quantity": "الكمية"
+  },
+  "favorites": {
+    "title": "مفضلتي",
+    "empty": "لا توجد منتجات في المفضلة"
+  },
+  "search": {
+    "placeholder": "ابحثي عن منتج...",
+    "noResults": "لا توجد نتائج",
+    "results": "نتائج البحث عن"
+  },
+  "footer": {
+    "rights": "جميع الحقوق محفوظة",
+    "contact": "تواصلي معنا",
+    "about": "من نحن",
+    "links": "روابط سريعة",
+    "shipping": "الشحن والتوصيل"
+  },
+  "sidebar": {
+    "home": "الرئيسية",
+    "boutique": "البوتيك",
+    "categories": "الفئات",
+    "favorites": "المفضلة",
+    "contact": "تواصل",
+    "language": "اللغة"
+  }
+}

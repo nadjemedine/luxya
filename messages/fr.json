@@ -1,0 +1,66 @@
+{
+  "nav": {
+    "boutique": "Boutique",
+    "favorite": "Favoris",
+    "search": "Rechercher",
+    "cart": "Panier",
+    "menu": "Menu"
+  },
+  "announcement": "Bienvenue à Luxya Shop - Livraison gratuite à partir de 10000 DZD",
+  "hero": {
+    "title": "L'élégance à votre portée",
+    "subtitle": "Découvrez notre collection exclusive",
+    "cta": "Découvrir"
+  },
+  "sections": {
+    "featured": "Produits Vedettes",
+    "newArrivals": "Nouveautés",
+    "categories": "Nos Catégories",
+    "sale": "Soldes"
+  },
+  "product": {
+    "addToCart": "Ajouter au panier",
+    "addToFavorite": "Ajouter aux favoris",
+    "inStock": "En stock",
+    "outOfStock": "Épuisé",
+    "size": "Taille",
+    "color": "Couleur",
+    "description": "Description",
+    "reviews": "Avis",
+    "new": "Nouveau",
+    "sale": "Solde"
+  },
+  "cart": {
+    "title": "Mon Panier",
+    "empty": "Votre panier est vide",
+    "total": "Total",
+    "checkout": "Commander",
+    "continueShopping": "Continuer les achats",
+    "remove": "Supprimer",
+    "quantity": "Quantité"
+  },
+  "favorites": {
+    "title": "Mes Favoris",
+    "empty": "Aucun favori pour le moment"
+  },
+  "search": {
+    "placeholder": "Rechercher un produit...",
+    "noResults": "Aucun résultat trouvé",
+    "results": "Résultats pour"
+  },
+  "footer": {
+    "rights": "Tous droits réservés",
+    "contact": "Contact",
+    "about": "À propos",
+    "links": "Liens Rapides",
+    "shipping": "Livraison"
+  },
+  "sidebar": {
+    "home": "Accueil",
+    "boutique": "Boutique",
+    "categories": "Catégories",
+    "favorites": "Favoris",
+    "contact": "Contact",
+    "language": "Langue"
+  }
+}
