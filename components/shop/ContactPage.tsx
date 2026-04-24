@@ -25,7 +25,7 @@ export default function ContactPage() {
               </svg>
             </div>
             <h3>{lang === 'fr' ? 'Téléphone' : 'الهاتف'}</h3>
-            <a href="tel:0796265455" className="contact-link">0796265455</a>
+            <a href="tel:0563413607" className="contact-link">0563413607</a>
           </div>
 
           {/* Instagram Card */}
@@ -38,7 +38,7 @@ export default function ContactPage() {
               </svg>
             </div>
             <h3>Instagram</h3>
-            <a href="https://www.instagram.com/luxya_90" target="_blank" rel="noopener noreferrer" className="contact-link">@luxya_90</a>
+            <span className="contact-link" style={{ color: 'var(--gray-300)', cursor: 'default' }}>{lang === 'fr' ? 'Prochainement' : 'قريباً'}</span>
           </div>
 
           {/* Facebook Card */}
