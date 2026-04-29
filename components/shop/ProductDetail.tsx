@@ -12,13 +12,30 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product, onBack, onNavigate }: ProductDetailProps) {
-  const { lang, t } = useLang();
+  const { lang, setLang, t, isRTL } = useLang();
   const { addToCart, toggleFavorite, isFavorite } = useCart();
   const [selectedImg, setSelectedImg] = useState(0);
+
+  // Extract unique sizes and colors from both main fields AND variants
+  const availableSizes = Array.from(new Set([
+    ...(Array.isArray(product.sizes) ? product.sizes : []),
+    ...(product.variants?.map(v => v.size).filter(Boolean) as string[] || [])
+  ]));
+
+  const availableColors = Array.from(new Set([
+    ...(Array.isArray(product.colors) ? product.colors : []),
+    ...(product.variants?.map(v => v.color).filter(Boolean) as string[] || [])
+  ]));
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
   const fav = isFavorite(product._id);
+
+  // Calculate total stock and check if in stock from variants
+  const totalStock = product.variants?.reduce((acc, v) => acc + (v.quantity || 0), 0) ?? 0;
+  const isCurrentlyInStock = product.variants && product.variants.length > 0 
+    ? totalStock > 0 
+    : (product.inStock !== false); // fallback to inStock boolean if no variants
 
   const name = product.name[lang] || product.name.fr;
   const desc = product.description?.[lang] || product.description?.fr;
@@ -97,18 +114,18 @@ export default function ProductDetail({ product, onBack, onNavigate }: ProductDe
 
       {/* Stock status */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '20px' }}>
-        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: product.inStock ? '#48bb78' : '#e53e3e' }} />
-        <span style={{ fontSize: '13px', color: product.inStock ? '#48bb78' : '#e53e3e', fontWeight: 500 }}>
-          {product.inStock ? t('product.inStock') : t('product.outOfStock')}
+        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: isCurrentlyInStock ? '#48bb78' : '#e53e3e' }} />
+        <span style={{ fontSize: '13px', color: isCurrentlyInStock ? '#48bb78' : '#e53e3e', fontWeight: 500 }}>
+          {isCurrentlyInStock ? t('product.inStock') : t('product.outOfStock')}
         </span>
       </div>
 
       {/* Sizes */}
-      {product.sizes && product.sizes.length > 0 && (
+      {availableSizes.length > 0 && (
         <div style={{ marginBottom: '16px' }}>
           <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: 'var(--gray-500)' }}>{t('product.size')}</p>
           <div className="size-grid">
-            {product.sizes.map(size => (
+            {availableSizes.map((size: string) => size && (
               <button
                 key={size}
                 className={`size-chip ${selectedSize === size ? 'active' : ''}`}
@@ -120,17 +137,16 @@ export default function ProductDetail({ product, onBack, onNavigate }: ProductDe
       )}
 
       {/* Colors */}
-      {product.colors && product.colors.length > 0 && (
+      {availableColors.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '13px', fontWeight: 600, marginBottom: '8px', color: 'var(--gray-500)' }}>{t('product.color')}</p>
           <div className="color-dots">
-            {product.colors.map(c => (
+            {availableColors.map((hex: string) => hex && (
               <div
-                key={c.hex}
-                className={`color-dot ${selectedColor === c.name ? 'active' : ''}`}
-                style={{ background: c.hex }}
-                title={c.name}
-                onClick={() => setSelectedColor(c.name)}
+                key={hex}
+                className={`color-dot ${selectedColor === hex ? 'active' : ''}`}
+                style={{ background: hex }}
+                onClick={() => setSelectedColor(hex)}
               />
             ))}
           </div>
@@ -149,18 +165,18 @@ export default function ProductDetail({ product, onBack, onNavigate }: ProductDe
       <div className="product-detail-add-to-cart-bar" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <button
           className="btn btn-primary btn-full"
-          disabled={!product.inStock}
+          disabled={!isCurrentlyInStock}
           onClick={() => {
             addToCart(product, 1, selectedSize || undefined, selectedColor || undefined);
             onNavigate('checkout');
           }}
-          style={{ background: 'var(--gold)', borderColor: 'var(--gold)', color: 'var(--aubergine-dark)', fontSize: '16px' }}
+          style={{ background: 'var(--gold)', border: 'none', color: 'var(--aubergine-dark)', fontSize: '16px' }}
         >
           {lang === 'fr' ? '🌟 Commander directement' : '🌟 اطلب مباشرة'}
         </button>
         <button
           className="btn btn-outline btn-full"
-          disabled={!product.inStock || added}
+          disabled={!isCurrentlyInStock || added}
           onClick={handleAddToCart}
           style={added ? { background: '#48bb78', borderColor: '#48bb78', color: 'white' } : {}}
         >

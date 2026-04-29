@@ -21,7 +21,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
   return (
     <>
       <header className="header">
-        {/* Mobile: Left side (menu + search) */}
+        {/* Mobile: Left side (menu) */}
         <div className="mobile-only" style={{ gap: '8px' }}>
           <button className="header-icon-btn" onClick={() => setSidebarOpen(true)} aria-label="Menu">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -30,25 +30,19 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
               <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
-          <button className="header-icon-btn" onClick={() => setSearchOpen(true)} aria-label="Search">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
         </div>
 
         {/* Desktop: Left – Logo + Nav */}
         <div className="desktop-only" style={{ alignItems: 'center', gap: '36px' }}>
-          <div className="header-logo" onClick={() => onNavigate('boutique')} style={{ cursor: 'pointer' }}>
+          <div className="header-logo" onClick={() => onNavigate('home')} style={{ cursor: 'pointer' }}>
             <img src="/logo.png" alt="Luxya Boutique" style={{ width: '120px', height: 'auto', objectFit: 'contain' }} />
           </div>
           <nav className="header-desktop-nav">
             <button
-              className={`header-desktop-nav-item ${currentPage === 'boutique' ? 'active' : ''}`}
-              onClick={() => onNavigate('boutique')}
+              className={`header-desktop-nav-item ${currentPage === 'home' ? 'active' : ''}`}
+              onClick={() => onNavigate('home')}
             >
-              {t('nav.boutique')}
+              {lang === 'ar' ? 'الرئيسية' : 'Accueil'}
             </button>
             <button
               className={`header-desktop-nav-item ${currentPage === 'favorites' ? 'active' : ''}`}
@@ -66,7 +60,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
         </div>
 
         {/* Mobile: Center logo */}
-        <div className="header-logo mobile-only" onClick={() => onNavigate('boutique')} style={{ cursor: 'pointer' }}>
+        <div className="header-logo mobile-only" onClick={() => onNavigate('home')} style={{ cursor: 'pointer' }}>
           <img src="/logo.png" alt="Luxya Boutique" style={{ width: '100px', height: 'auto', objectFit: 'contain' }} />
         </div>
 
@@ -89,7 +83,7 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
             </button>
           </div>
 
-          <button className="header-icon-btn desktop-only" onClick={() => setSearchOpen(true)} aria-label="Search">
+          <button className="header-icon-btn" onClick={() => setSearchOpen(true)} aria-label="Search">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />

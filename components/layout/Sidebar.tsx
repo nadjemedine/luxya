@@ -1,22 +1,29 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { useLang } from '@/context/LangContext';
+import { client, urlFor } from '@/lib/sanity';
+import { Category } from '@/types';
 
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, data?: any) => void;
 }
 
 const NAV_ITEMS = [
   { key: 'home', icon: '🏠', page: 'home' },
-  { key: 'boutique', icon: '👗', page: 'boutique' },
-  { key: 'categories', icon: '🗂️', page: 'boutique' },
   { key: 'favorites', icon: '❤️', page: 'favorites' },
   { key: 'contact', icon: '📩', page: 'contact' },
 ];
 
 export default function Sidebar({ open, onClose, onNavigate }: SidebarProps) {
   const { lang, setLang, t, isRTL } = useLang();
+  const [activeTab, setActiveTab] = useState<'pages' | 'categories'>('pages');
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    client.fetch(`*[_type == "category"] | order(order asc)`).then(setCategories).catch(console.error);
+  }, []);
 
   return (
     <>
@@ -33,8 +40,47 @@ export default function Sidebar({ open, onClose, onNavigate }: SidebarProps) {
           </div>
         </div>
 
+        <div style={{ display: 'flex', borderBottom: '1px solid var(--gray-200)', marginTop: '8px' }}>
+          <button 
+            onClick={() => setActiveTab('pages')}
+            style={{ 
+              flex: 1, 
+              padding: '12px', 
+              borderBottom: activeTab === 'pages' ? '2px solid var(--aubergine)' : '2px solid transparent', 
+              fontWeight: activeTab === 'pages' ? 'bold' : 'normal', 
+              background: 'none', 
+              borderTop: 'none', 
+              borderLeft: 'none', 
+              borderRight: 'none', 
+              cursor: 'pointer', 
+              color: activeTab === 'pages' ? 'var(--aubergine)' : 'var(--gray-500)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {t('sidebar.pages')}
+          </button>
+          <button 
+            onClick={() => setActiveTab('categories')}
+            style={{ 
+              flex: 1, 
+              padding: '12px', 
+              borderBottom: activeTab === 'categories' ? '2px solid var(--aubergine)' : '2px solid transparent', 
+              fontWeight: activeTab === 'categories' ? 'bold' : 'normal', 
+              background: 'none', 
+              borderTop: 'none', 
+              borderLeft: 'none', 
+              borderRight: 'none', 
+              cursor: 'pointer', 
+              color: activeTab === 'categories' ? 'var(--aubergine)' : 'var(--gray-500)',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {t('sidebar.categories')}
+          </button>
+        </div>
+
         <nav className="sidebar-nav">
-          {NAV_ITEMS.map(item => (
+          {activeTab === 'pages' && NAV_ITEMS.map(item => (
             <button
               key={item.key}
               className="sidebar-nav-item"
@@ -44,6 +90,27 @@ export default function Sidebar({ open, onClose, onNavigate }: SidebarProps) {
               <span>{t(`sidebar.${item.key}`)}</span>
             </button>
           ))}
+          
+          {activeTab === 'categories' && categories.map(cat => (
+            <button
+              key={cat._id}
+              className="sidebar-nav-item"
+              onClick={() => { onNavigate('boutique', { categoryId: cat._id }); onClose(); }}
+            >
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>
+                 {cat.image ? (
+                   <img src={urlFor(cat.image).width(56).height(56).url()} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                 ) : '👗'}
+              </div>
+              <span>{cat.name[lang] || cat.name.fr}</span>
+            </button>
+          ))}
+          
+          {activeTab === 'categories' && categories.length === 0 && (
+            <div style={{ padding: '20px', textAlign: 'center', color: 'var(--gray-500)', fontSize: '13px' }}>
+              {lang === 'ar' ? 'جاري التحميل...' : 'Chargement...'}
+            </div>
+          )}
         </nav>
 
         <div className="sidebar-lang">

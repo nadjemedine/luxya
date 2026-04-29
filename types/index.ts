@@ -16,9 +16,10 @@ export interface Product {
   category: Category;
   tags?: string[];
   sizes?: string[];
-  colors?: { name: string; hex: string }[];
-  inStock: boolean;
+  colors?: string[];
+  inStock?: boolean;
   stockQuantity?: number;
+  variants?: { color?: string; size?: string; quantity?: number; lowStockThreshold?: number }[];
   isFeatured: boolean;
   isNew: boolean;
   isSale: boolean;
@@ -40,6 +41,7 @@ export interface Banner {
   title: LocalizedString;
   subtitle?: LocalizedString;
   image: any;
+  image2?: any;
   link?: string;
   buttonText?: LocalizedString;
   active: boolean;

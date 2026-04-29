@@ -28,6 +28,12 @@ export default {
       options: { hotspot: true },
     },
     {
+      name: 'image2',
+      title: 'Image 2 (Optionnelle)',
+      type: 'image',
+      options: { hotspot: true },
+    },
+    {
       name: 'link',
       title: 'Lien / الرابط',
       type: 'string',
