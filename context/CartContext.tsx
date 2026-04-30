@@ -6,8 +6,8 @@ interface CartContextType {
   cart: CartItem[];
   favorites: Product[];
   addToCart: (product: Product, quantity?: number, size?: string, color?: string) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: string, size?: string, color?: string) => void;
+  updateQuantity: (productId: string, quantity: number, size?: string, color?: string) => void;
   clearCart: () => void;
   toggleFavorite: (product: Product) => void;
   isFavorite: (productId: string) => boolean;
@@ -53,18 +53,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (productId: string) => {
-    setCart(prev => prev.filter(item => item.product._id !== productId));
+  const removeFromCart = (productId: string, size?: string, color?: string) => {
+    setCart(prev => prev.filter(item => 
+      !(item.product._id === productId && item.size === size && item.color === color)
+    ));
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number, size?: string, color?: string) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, size, color);
       return;
     }
     setCart(prev =>
       prev.map(item =>
-        item.product._id === productId ? { ...item, quantity } : item
+        item.product._id === productId && item.size === size && item.color === color 
+          ? { ...item, quantity } 
+          : item
       )
     );
   };

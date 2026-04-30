@@ -11,11 +11,12 @@ import ProductDetail from '@/components/shop/ProductDetail';
 import ContactPage from '@/components/shop/ContactPage';
 import CheckoutPage from '@/components/shop/CheckoutPage';
 import ProductListPage from '@/components/shop/ProductListPage';
+import CategoriesPage from '@/components/shop/CategoriesPage';
 import Footer from '@/components/layout/Footer';
 import { Product } from '@/types';
 import { useLang } from '@/context/LangContext';
 
-type Page = 'home' | 'boutique' | 'favorites' | 'product' | 'contact' | 'checkout' | 'featured' | 'new' | 'sale';
+type Page = 'home' | 'boutique' | 'favorites' | 'product' | 'contact' | 'checkout' | 'featured' | 'new' | 'sale' | 'categories';
 
 function AppContent({ 
   currentPage, 
@@ -47,6 +48,7 @@ function AppContent({
         : <HomePage onNavigate={navigate} />;
       case 'contact': return <ContactPage />;
       case 'checkout': return <CheckoutPage />;
+      case 'categories': return <CategoriesPage onNavigate={navigate} />;
       default: return <HomePage onNavigate={navigate} />;
     }
   };
@@ -56,7 +58,7 @@ function AppContent({
       <AnnouncementBar />
       <Header onNavigate={navigate} currentPage={currentPage} />
       <main>{renderPage()}</main>
-      <Footer onNavigate={navigate} />
+      {currentPage !== 'home' && <Footer onNavigate={navigate} />}
       <BottomNav currentPage={currentPage} onNavigate={navigate} />
     </>
   );

@@ -847,10 +847,11 @@ body {
 /* ── Hero Banner ── */
 .hero-banner {
   position: relative;
-  margin: 0 0 30px;
+  height: calc(100vh - var(--announcement-height) - var(--header-height) - var(--bottom-bar-height));
+  min-height: 480px;
+  margin: 0;
   border-radius: 0;
   overflow: hidden;
-  aspect-ratio: 4/3;
   background: linear-gradient(135deg, var(--aubergine-dark) 0%, var(--aubergine-light) 100%);
 }
 
@@ -871,6 +872,10 @@ body {
   text-align: center;
   padding: 24px;
   background: linear-gradient(to top, rgba(45, 15, 41, 0.7) 0%, transparent 60%);
+}
+
+.hero-banner-content .btn {
+  margin-top: 80px;
 }
 
 .hero-title {
@@ -1102,6 +1107,7 @@ body {
   /* ── Body ── */
   body {
     padding-bottom: 0;
+    --bottom-bar-height: 0px;
   }
 
   /* ── Announcement Bar ── */
@@ -1114,6 +1120,7 @@ body {
   .header {
     padding: 0 32px;
     height: 76px;
+    --header-height: 76px;
   }
 
   .header-logo-text {
@@ -1147,9 +1154,9 @@ body {
 
   /* ── Hero Banner ── */
   .hero-banner {
-    margin: 0 0 36px;
+    height: calc(100vh - var(--announcement-height) - var(--header-height) - var(--bottom-bar-height));
+    margin: 0;
     border-radius: 0;
-    aspect-ratio: 16/9;
   }
 
   .hero-title {
@@ -1281,8 +1288,8 @@ body {
 
   /* ── Hero Banner ── */
   .hero-banner {
-    margin: 0 0 44px;
-    aspect-ratio: 21/9;
+    height: calc(100vh - var(--announcement-height) - var(--header-height) - var(--bottom-bar-height));
+    margin: 0;
     border-radius: 0;
   }
 
@@ -1431,9 +1438,9 @@ body {
   }
 
   .hero-banner {
+    height: calc(100vh - var(--announcement-height) - var(--header-height) - var(--bottom-bar-height));
     max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 0;
   }
 
   .product-detail-layout {

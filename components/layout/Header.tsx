@@ -45,6 +45,12 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
               {lang === 'ar' ? 'الرئيسية' : 'Accueil'}
             </button>
             <button
+              className={`header-desktop-nav-item ${currentPage === 'categories' ? 'active' : ''}`}
+              onClick={() => onNavigate('categories')}
+            >
+              {t('sidebar.categories')}
+            </button>
+            <button
               className={`header-desktop-nav-item ${currentPage === 'favorites' ? 'active' : ''}`}
               onClick={() => onNavigate('favorites')}
             >
