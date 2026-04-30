@@ -20,10 +20,12 @@ type Page = 'home' | 'boutique' | 'favorites' | 'product' | 'contact' | 'checkou
 function AppContent({ 
   currentPage, 
   selectedProduct, 
+  navData,
   navigate 
 }: { 
   currentPage: Page, 
   selectedProduct: Product | null, 
+  navData: any,
   navigate: (page: string, data?: any) => void 
 }) {
   const { t } = useLang();
@@ -31,6 +33,11 @@ function AppContent({
   const renderPage = () => {
     switch (currentPage) {
       case 'home': return <HomePage onNavigate={navigate} />;
+      case 'boutique': 
+        if (navData?.categoryId) {
+          return <ProductListPage title={navData.categoryName || t('nav.boutique')} filter={`category._ref == "${navData.categoryId}"`} onNavigate={navigate} />;
+        }
+        return <ProductListPage title={t('nav.boutique')} filter="true" onNavigate={navigate} />;
       case 'favorites': return <FavoritesPage onNavigate={navigate} />;
       case 'featured': return <ProductListPage title={t('sections.featured')} filter="isFeatured == true" onNavigate={navigate} />;
       case 'new': return <ProductListPage title={t('sections.newArrivals')} filter="isNew == true" onNavigate={navigate} />;
@@ -70,7 +77,7 @@ export default function App() {
   return (
     <LangProvider>
       <CartProvider>
-        <AppContent currentPage={currentPage} selectedProduct={selectedProduct} navigate={navigate} />
+        <AppContent currentPage={currentPage} selectedProduct={selectedProduct} navData={navData} navigate={navigate} />
       </CartProvider>
     </LangProvider>
   );

@@ -89,7 +89,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           </div>
           <div className="categories-grid">
             {categories.map(cat => (
-              <div key={cat._id} className="category-pill">
+              <div key={cat._id} className="category-pill" onClick={() => onNavigate('boutique', { categoryId: cat._id, categoryName: cat.name[lang] || cat.name.fr })}>
                 <div className="category-pill-img" style={{ overflow: 'hidden' }}>
                   {cat.image ? (
                     <img src={urlFor(cat.image).width(140).height(140).url()} alt={cat.name[lang] || cat.name.fr}

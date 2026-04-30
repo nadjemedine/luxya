@@ -95,7 +95,7 @@ export default function Sidebar({ open, onClose, onNavigate }: SidebarProps) {
             <button
               key={cat._id}
               className="sidebar-nav-item"
-              onClick={() => { onNavigate('boutique', { categoryId: cat._id }); onClose(); }}
+              onClick={() => { onNavigate('boutique', { categoryId: cat._id, categoryName: cat.name[lang] || cat.name.fr }); onClose(); }}
             >
               <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>
                  {cat.image ? (
