@@ -3,20 +3,21 @@ import { Product } from '@/types';
 import { urlFor } from '@/lib/sanity';
 import { useLang } from '@/context/LangContext';
 import { useCart } from '@/context/CartContext';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
   product: Product;
-  onClick: () => void;
 }
 
-export default function ProductCard({ product, onClick }: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
+  const router = useRouter();
   const { lang, t } = useLang();
   const { toggleFavorite, isFavorite, addToCart } = useCart();
   const fav = isFavorite(product._id);
   const name = product.name[lang] || product.name.fr;
 
   return (
-    <div className="product-card" onClick={onClick}>
+    <div className="product-card" onClick={() => router.push(`/product/${product.slug?.current || product._id}`)}>
       <div className="product-img-wrap">
         {product.images?.[0] ? (
           <img

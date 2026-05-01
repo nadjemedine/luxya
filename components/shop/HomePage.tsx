@@ -4,11 +4,10 @@ import { client, urlFor } from '@/lib/sanity';
 import { useLang } from '@/context/LangContext';
 import { Banner } from '@/types';
 
-interface HomePageProps {
-  onNavigate: (page: string, data?: any) => void;
-}
+import { useRouter } from 'next/navigation';
 
-export default function HomePage({ onNavigate }: HomePageProps) {
+export default function HomePage() {
+  const router = useRouter();
   const { lang, t } = useLang();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +51,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
             {heroBanner.subtitle && (
               <p className="hero-subtitle">{heroBanner.subtitle[lang] || heroBanner.subtitle.fr}</p>
             )}
-            <button className="btn btn-primary" onClick={() => onNavigate('categories')}>
+            <button className="btn btn-primary" onClick={() => router.push('/categories')}>
               {heroBanner.buttonText?.[lang] || t('hero.cta')}
             </button>
           </div>
@@ -62,7 +61,7 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <div className="hero-banner-content" style={{ background: 'none' }}>
             <h1 className="hero-title">{t('hero.title')}</h1>
             <p className="hero-subtitle">{t('hero.subtitle')}</p>
-            <button className="btn btn-primary">{t('hero.cta')}</button>
+            <button className="btn btn-primary" onClick={() => router.push('/categories')}>{t('hero.cta')}</button>
           </div>
         </div>
       )}

@@ -2,12 +2,10 @@
 import { useCart } from '@/context/CartContext';
 import { useLang } from '@/context/LangContext';
 import ProductCard from './ProductCard';
+import { useRouter } from 'next/navigation';
 
-interface FavoritesPageProps {
-  onNavigate: (page: string, data?: any) => void;
-}
-
-export default function FavoritesPage({ onNavigate }: FavoritesPageProps) {
+export default function FavoritesPage() {
+  const router = useRouter();
   const { favorites } = useCart();
   const { t } = useLang();
 
@@ -23,7 +21,7 @@ export default function FavoritesPage({ onNavigate }: FavoritesPageProps) {
             <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
           </svg>
           <p style={{ fontSize: '16px', fontWeight: 600 }}>{t('favorites.empty')}</p>
-          <button className="btn btn-primary" style={{ marginTop: '8px' }} onClick={() => onNavigate('boutique')}>
+          <button className="btn btn-primary" style={{ marginTop: '8px' }} onClick={() => router.push('/boutique')}>
             {t('cart.continueShopping')}
           </button>
         </div>
@@ -31,7 +29,7 @@ export default function FavoritesPage({ onNavigate }: FavoritesPageProps) {
         <div className="section" style={{ paddingTop: '16px' }}>
           <div className="products-grid">
             {favorites.map(p => (
-              <ProductCard key={p._id} product={p} onClick={() => onNavigate('product', p)} />
+              <ProductCard key={p._id} product={p} />
             ))}
           </div>
         </div>

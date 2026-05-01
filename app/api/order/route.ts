@@ -27,7 +27,7 @@ export async function POST(request: Request) {
           <h3 style="color: #333;">Informations Client</h3>
           <p><strong>Nom:</strong> ${formData.fullName}</p>
           <p><strong>Téléphone:</strong> ${formData.phone}</p>
-          <p><strong>Adresse:</strong> Wilaya ${formData.wilaya}, Commune ${formData.municipality}</p>
+          <p><strong>Adresse:</strong> Wilaya ${formData.wilaya}, Commune ${formData.municipality}${formData.address ? `<br/>Détails: ${formData.address}` : ''}</p>
           <p><strong>Type de livraison:</strong> ${formData.deliveryType === 'home' ? 'Domicile' : 'Bureau'}</p>
         </div>
 

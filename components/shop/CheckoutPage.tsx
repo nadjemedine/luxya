@@ -16,11 +16,24 @@ export default function CheckoutPage() {
     phone: '',
     wilaya: '',
     municipality: '',
+    address: '',
     deliveryType: 'home', // 'home' | 'office'
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.fullName.trim() || !formData.phone.trim() || !formData.wilaya || !formData.municipality.trim() || (formData.deliveryType === 'home' && !formData.address.trim())) {
+      alert(lang === 'fr' ? 'Veuillez remplir tous les champs obligatoires dans le formulaire.' : 'الرجاء ملء جميع الخانات الإلزامية في نموذج الطلب.');
+      return;
+    }
+
+    const phoneRegex = /^(05|06|07)\d{8}$/;
+    if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      alert(lang === 'fr' ? 'Veuillez entrer un numéro de téléphone valide de 10 chiffres commençant par 05, 06 ou 07.' : 'يرجى إدخال رقم هاتف صحيح متكون من 10 أرقام ويبدأ بـ 05، 06، أو 07.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -84,70 +97,14 @@ export default function CheckoutPage() {
           {lang === 'fr' ? 'Finaliser la commande' : 'إتمام الطلب'}
         </h1>
 
-        <div className="checkout-grid" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-          {/* Order Summary - Moved ABOVE the form */}
-          <div className="checkout-summary-card" style={{ order: 1, position: 'relative', top: '0', height: 'auto', marginBottom: '24px' }}>
-            <div className="checkout-items">
-              {cart.map((item) => (
-                <div key={`${item.product._id}-${item.size}-${item.color}`} className="checkout-item" style={{ 
-                  position: 'relative', 
-                  paddingRight: '40px',
-                  display: 'flex',
-                  gap: '20px',
-                  borderBottom: '1px solid rgba(255,255,255,0.1)',
-                  paddingBottom: '20px',
-                  marginBottom: '20px'
-                }}>
-                  <div className="checkout-item-img" style={{ width: '80px', height: '100px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden' }}>
-                    {item.product.images?.[0] && <img src={urlFor(item.product.images[0]).width(80).url()} alt={item.product.name[lang] || item.product.name.fr} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                  </div>
-                  <div className="checkout-item-info" style={{ flex: 1, minWidth: 0 }}>
-                    <h4 style={{ fontSize: '15px', fontWeight: '500', marginBottom: '8px', color: 'var(--white)' }}>
-                      {item.product.name[lang] || item.product.name.fr}
-                    </h4>
-                    <div className="checkout-item-details" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-                      {item.size && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.size}</span>}
-                      {item.color && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.color}</span>}
-                    </div>
-                    
-                    <div className="checkout-item-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '15px' }}>
-                      <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <button 
-                          type="button"
-                          onClick={() => updateQuantity(item.product._id, item.quantity - 1, item.size, item.color)}
-                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
-                        >−</button>
-                        <span style={{ fontWeight: 'bold', fontSize: '14px', minWidth: '15px', textAlign: 'center' }}>{item.quantity}</span>
-                        <button 
-                          type="button"
-                          onClick={() => updateQuantity(item.product._id, item.quantity + 1, item.size, item.color)}
-                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
-                        >+</button>
-                      </div>
-                      <span className="checkout-item-price" style={{ fontWeight: 'bold', color: 'var(--gold)', fontSize: '14px' }}>{item.product.price * item.quantity} DZD</span>
-                    </div>
-                  </div>
-                  <button 
-                    type="button"
-                    className="remove-btn"
-                    onClick={() => removeFromCart(item.product._id, item.size, item.color)}
-                    style={{ position: 'absolute', top: '0', right: '0', border: 'none', background: 'none', color: '#ff4d4f', cursor: 'pointer', fontSize: '22px', padding: '0' }}
-                    title={lang === 'fr' ? 'Supprimer' : 'حذف'}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Form - Moved BELOW the items */}
-          <div style={{ order: 2 }}>
-            <h3 className="section-title" style={{ fontSize: '18px', marginBottom: '20px', textAlign: isRTL ? 'right' : 'left' }}>
+        <div className="checkout-grid">
+          {/* Delivery Form - Column 1 */}
+          <div>
+            <h3 className="section-title" style={{ fontSize: '20px', marginBottom: '24px', textAlign: 'center', width: '100%' }}>
               {lang === 'fr' ? 'Informations de livraison' : 'معلومات التوصيل'}
             </h3>
             <form className="checkout-form" onSubmit={handleSubmit}>
-              <div className="form-group">
+              <div className="form-group" style={{ marginBottom: '20px' }}>
                 <label>{lang === 'fr' ? 'Nom complet' : 'الاسم الكامل'}</label>
                 <input 
                   type="text" 
@@ -158,12 +115,12 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="form-group" style={{ marginBottom: '20px' }}>
                 <label>{lang === 'fr' ? 'Numéro de téléphone' : 'رقم الهاتف'}</label>
                 <input 
                   type="tel" 
                   required 
-                  placeholder="07XXXXXXXX"
+                  placeholder="05 / 06 / 07"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 />
@@ -194,6 +151,19 @@ export default function CheckoutPage() {
                   />
                 </div>
               </div>
+
+              {formData.deliveryType === 'home' && (
+                <div className="form-group" style={{ marginBottom: '20px' }}>
+                  <label>{lang === 'fr' ? 'Adresse détaillée' : 'العنوان التفصيلي'}</label>
+                  <input 
+                    type="text" 
+                    required={formData.deliveryType === 'home'} 
+                    placeholder={lang === 'fr' ? 'Votre adresse détaillée' : 'عنوانكم التفصيلي'}
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  />
+                </div>
+              )}
 
               <div className="form-group">
                 <label>{lang === 'fr' ? 'Type de livraison' : 'نوع التوصيل'}</label>
@@ -239,7 +209,11 @@ export default function CheckoutPage() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', color: 'var(--gray-200)', gap: '10px', flexWrap: 'wrap' }}>
                   <span>{lang === 'fr' ? 'Livraison' : 'التوصيل'}</span>
-                  <span style={{ color: '#4ade80', fontWeight: '500', fontSize: '13px', textAlign: isRTL ? 'left' : 'right' }}>{lang === 'fr' ? 'Calculé à la confirmation' : 'يُحسب عند التأكيد'}</span>
+                  <span style={{ color: cartTotal >= 15000 ? 'var(--gold)' : '#4ade80', fontWeight: '500', fontSize: '13px', textAlign: isRTL ? 'left' : 'right' }}>
+                    {cartTotal >= 15000 
+                      ? (lang === 'fr' ? 'Gratuit' : 'مجاني') 
+                      : (lang === 'fr' ? 'Calculé à la confirmation' : 'يُحسب عند التأكيد')}
+                  </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
                   <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{t('cart.total')}</span>
@@ -251,6 +225,68 @@ export default function CheckoutPage() {
                 {loading ? <div className="spinner-small" /> : (lang === 'fr' ? 'Commander maintenant' : 'تأكيد الطلب الآن')}
               </button>
             </form>
+          </div>
+
+          {/* Order Summary - Column 2 */}
+          <div className="checkout-summary-card" style={{ paddingBottom: '20px' }}>
+            <div className="checkout-items">
+              {cart.map((item, index) => (
+                <div key={`${item.product._id}-${item.size}-${item.color}`} className="checkout-item" style={{ 
+                  position: 'relative', 
+                  display: 'flex',
+                  gap: '20px',
+                  borderBottom: index === cart.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                  paddingBottom: '20px',
+                  marginBottom: index === cart.length - 1 ? '0' : '20px'
+                }}>
+                  <div className="checkout-item-img" style={{ width: '80px', height: '100px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden' }}>
+                    {item.product.images?.[0] && <img src={urlFor(item.product.images[0]).width(80).url()} alt={item.product.name[lang] || item.product.name.fr} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                  </div>
+                  <div className="checkout-item-info" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                    <h4 style={{ fontSize: '15px', fontWeight: '500', marginBottom: '8px', color: 'var(--white)' }}>
+                      {item.product.name[lang] || item.product.name.fr}
+                    </h4>
+                    <div className="checkout-item-details" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: 'auto' }}>
+                      {item.size && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.size}</span>}
+                      {item.color && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.color}</span>}
+                    </div>
+                    
+                    <div className="checkout-item-actions" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '15px', marginTop: '12px' }}>
+                      <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <button 
+                          type="button"
+                          onClick={() => updateQuantity(item.product._id, item.quantity - 1, item.size, item.color)}
+                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
+                        >−</button>
+                        <span style={{ fontWeight: 'bold', fontSize: '14px', minWidth: '15px', textAlign: 'center' }}>{item.quantity}</span>
+                        <button 
+                          type="button"
+                          onClick={() => updateQuantity(item.product._id, item.quantity + 1, item.size, item.color)}
+                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
+                        >+</button>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                        <button 
+                          type="button"
+                          className="remove-btn"
+                          onClick={() => removeFromCart(item.product._id, item.size, item.color)}
+                          style={{ border: 'none', background: 'none', color: '#ff4d4f', cursor: 'pointer', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title={lang === 'fr' ? 'Supprimer' : 'حذف'}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                        <span className="checkout-item-price" style={{ fontWeight: 'bold', color: 'var(--gold)', fontSize: '16px' }}>{item.product.price * item.quantity} DZD</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

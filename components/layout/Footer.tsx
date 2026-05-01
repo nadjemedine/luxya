@@ -1,11 +1,8 @@
 'use client';
 import { useLang } from '@/context/LangContext';
+import Link from 'next/link';
 
-interface FooterProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function Footer({ onNavigate }: FooterProps) {
+export default function Footer() {
   const { t, lang } = useLang();
 
   return (
@@ -14,9 +11,9 @@ export default function Footer({ onNavigate }: FooterProps) {
         <div className="footer-grid">
           {/* Brand Column */}
           <div className="footer-col brand">
-            <div className="footer-logo" onClick={() => onNavigate('boutique')} style={{ cursor: 'pointer' }}>
+            <Link href="/boutique" className="footer-logo" style={{ cursor: 'pointer', display: 'block' }}>
               <img src="/logo.png" alt="Luxya Boutique" style={{ width: '120px', height: 'auto' }} />
-            </div>
+            </Link>
             <p className="footer-about">
               {lang === 'fr' 
                 ? "Luxya Boutique — Votre destination pour l'élégance et le raffinement. Découvrez nos collections exclusives sélectionnées pour vous."
@@ -28,9 +25,9 @@ export default function Footer({ onNavigate }: FooterProps) {
           <div className="footer-col">
             <h4 className="footer-title">{t('footer.links')}</h4>
             <ul className="footer-links">
-              <li><button onClick={() => onNavigate('boutique')}>{t('nav.boutique')}</button></li>
-              <li><button onClick={() => onNavigate('favorites')}>{t('nav.favorite')}</button></li>
-              <li><button onClick={() => onNavigate('contact')}>{t('sidebar.contact')}</button></li>
+              <li><Link href="/boutique" style={{ color: 'inherit', textDecoration: 'none' }}>{t('nav.boutique')}</Link></li>
+              <li><Link href="/favorites" style={{ color: 'inherit', textDecoration: 'none' }}>{t('nav.favorite')}</Link></li>
+              <li><Link href="/contact" style={{ color: 'inherit', textDecoration: 'none' }}>{t('sidebar.contact')}</Link></li>
             </ul>
           </div>
 

@@ -3,21 +3,21 @@ import { useState, useEffect } from 'react';
 import { useLang } from '@/context/LangContext';
 import { client, urlFor } from '@/lib/sanity';
 import { Category } from '@/types';
+import Link from 'next/link';
 
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
-  onNavigate: (page: string, data?: any) => void;
 }
 
 const NAV_ITEMS = [
-  { key: 'home', icon: '🏠', page: 'home' },
-  { key: 'categories', icon: '📁', page: 'categories' },
-  { key: 'favorites', icon: '❤️', page: 'favorites' },
-  { key: 'contact', icon: '📩', page: 'contact' },
+  { key: 'home', icon: '🏠', url: '/' },
+  { key: 'categories', icon: '📁', url: '/categories' },
+  { key: 'favorites', icon: '❤️', url: '/favorites' },
+  { key: 'contact', icon: '📩', url: '/contact' },
 ];
 
-export default function Sidebar({ open, onClose, onNavigate }: SidebarProps) {
+export default function Sidebar({ open, onClose }: SidebarProps) {
   const { lang, setLang, t, isRTL } = useLang();
   const [activeTab, setActiveTab] = useState<'pages' | 'categories'>('pages');
   const [categories, setCategories] = useState<Category[]>([]);
@@ -82,21 +82,25 @@ export default function Sidebar({ open, onClose, onNavigate }: SidebarProps) {
 
         <nav className="sidebar-nav">
           {activeTab === 'pages' && NAV_ITEMS.map(item => (
-            <button
+            <Link
+              href={item.url}
               key={item.key}
               className="sidebar-nav-item"
-              onClick={() => { onNavigate(item.page); onClose(); }}
+              onClick={onClose}
+              style={{ textDecoration: 'none', color: 'inherit' }}
             >
               <span style={{ fontSize: '20px' }}>{item.icon}</span>
               <span>{t(`sidebar.${item.key}`)}</span>
-            </button>
+            </Link>
           ))}
           
           {activeTab === 'categories' && categories.map(cat => (
-            <button
+            <Link
+              href={`/category/${cat.slug?.current || cat._id}`}
               key={cat._id}
               className="sidebar-nav-item"
-              onClick={() => { onNavigate('boutique', { categoryId: cat._id, categoryName: cat.name[lang] || cat.name.fr }); onClose(); }}
+              onClick={onClose}
+              style={{ textDecoration: 'none', color: 'inherit' }}
             >
               <div style={{ width: '28px', height: '28px', borderRadius: '50%', overflow: 'hidden', background: 'var(--gray-100)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>
                  {cat.image ? (
@@ -104,7 +108,7 @@ export default function Sidebar({ open, onClose, onNavigate }: SidebarProps) {
                  ) : '👗'}
               </div>
               <span>{cat.name[lang] || cat.name.fr}</span>
-            </button>
+            </Link>
           ))}
           
           {activeTab === 'categories' && categories.length === 0 && (

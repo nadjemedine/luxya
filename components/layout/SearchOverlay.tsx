@@ -3,14 +3,15 @@ import { useState, useEffect, useRef } from 'react';
 import { client, urlFor } from '@/lib/sanity';
 import { useLang } from '@/context/LangContext';
 import { Product } from '@/types';
+import { useRouter } from 'next/navigation';
 
 interface SearchOverlayProps {
   open: boolean;
   onClose: () => void;
-  onNavigate: (page: string, data?: any) => void;
 }
 
-export default function SearchOverlay({ open, onClose, onNavigate }: SearchOverlayProps) {
+export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
+  const router = useRouter();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -65,7 +66,7 @@ export default function SearchOverlay({ open, onClose, onNavigate }: SearchOverl
               <div
                 key={p._id}
                 style={{ display: 'flex', gap: '12px', alignItems: 'center', cursor: 'pointer', padding: '8px', borderRadius: 'var(--radius)', transition: 'var(--transition)' }}
-                onClick={() => { onNavigate('product', p); onClose(); }}
+                onClick={() => { router.push(`/product/${p.slug?.current || p._id}`); onClose(); }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--gray-100)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >

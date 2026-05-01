@@ -770,33 +770,58 @@ body {
   }
 }
 
-/* ── Category Pills ── */
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  padding: 0 15px 20px;
-  justify-items: center;
-}
-
-.category-pill {
+/* ── Large Category Cards ── */
+.categories-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  cursor: pointer;
+  gap: 20px;
 }
 
-.category-pill-img {
-  width: 150px;
-  height: 150px;
-  border-radius: var(--radius-full);
-  object-fit: cover;
-  background: var(--gray-100);
-  box-shadow: var(--shadow);
-  transition: var(--transition);
+.category-card-large {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/16;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.category-card-large:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.category-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px 24px 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.category-card-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.category-card-cta {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 
 .category-pill:hover .category-pill-img,
 .category-pill.active .category-pill-img {
@@ -1455,7 +1480,7 @@ body {
 
 /* ── Footer ── */
 .footer {
-  background: var(--aubergine-dark);
+  background: var(--aubergine);
   color: var(--white);
   padding: 80px 0 40px;
   margin-top: 80px;
@@ -1766,7 +1791,7 @@ body {
 }
 
 .checkout-summary-card {
-  background: var(--aubergine-dark);
+  background: var(--aubergine);
   color: var(--white);
   padding: 40px;
   border-radius: var(--radius-xl);

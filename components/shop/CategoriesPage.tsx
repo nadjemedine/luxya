@@ -4,11 +4,10 @@ import { client, urlFor } from '@/lib/sanity';
 import { useLang } from '@/context/LangContext';
 import { Category } from '@/types';
 
-interface CategoriesPageProps {
-  onNavigate: (page: string, data?: any) => void;
-}
+import { useRouter } from 'next/navigation';
 
-export default function CategoriesPage({ onNavigate }: CategoriesPageProps) {
+export default function CategoriesPage() {
+  const router = useRouter();
   const { lang, t } = useLang();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,31 +35,36 @@ export default function CategoriesPage({ onNavigate }: CategoriesPageProps) {
         </h2>
         <div className="section-line" style={{ margin: '0 auto 32px' }} />
         
-        <div className="categories-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '24px' }}>
+        <div className="categories-list">
           {categories.map((cat) => (
             <div 
               key={cat._id} 
-              className="category-pill" 
-              onClick={() => onNavigate('boutique', { categoryId: cat._id, categoryName: cat.name[lang] || cat.name.fr })}
-              style={{ paddingBottom: '20px' }}
+              className="category-card-large" 
+              onClick={() => router.push(`/category/${cat.slug?.current || cat._id}`)}
             >
-              <div className="category-pill-img" style={{ width: '100%', aspectRatio: '1/1', overflow: 'hidden' }}>
+              <div className="category-card-img" style={{ width: '100%', height: '100%' }}>
                 {cat.image ? (
                   <img 
-                    src={urlFor(cat.image).width(200).height(200).url()} 
+                    src={urlFor(cat.image).width(1000).height(1000).url()} 
                     alt={cat.name[lang] || cat.name.fr} 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                   />
                 ) : (
                   <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, var(--aubergine-light), var(--aubergine-dark))',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '32px' }}>
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '48px' }}>
                     👗
                   </div>
                 )}
               </div>
-              <span className="category-pill-name" style={{ fontSize: '15px', fontWeight: 600, marginTop: '8px' }}>
-                {cat.name[lang] || cat.name.fr}
-              </span>
+              
+              <div className="category-card-overlay">
+                <h3 className="category-card-title">
+                  {cat.name[lang] || cat.name.fr}
+                </h3>
+                <span className="category-card-cta">
+                  {t('hero.cta')} <span style={{ fontSize: '18px' }}>→</span>
+                </span>
+              </div>
             </div>
           ))}
         </div>

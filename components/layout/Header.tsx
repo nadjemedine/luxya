@@ -5,18 +5,17 @@ import { useLang } from '@/context/LangContext';
 import Sidebar from './Sidebar';
 import CartDrawer from './CartDrawer';
 import SearchOverlay from './SearchOverlay';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
-interface HeaderProps {
-  onNavigate: (page: string) => void;
-  currentPage?: string;
-}
-
-export default function Header({ onNavigate, currentPage }: HeaderProps) {
+export default function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { cartCount } = useCart();
   const { isRTL, t, lang, setLang } = useLang();
+  const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <>
@@ -34,41 +33,41 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
 
         {/* Desktop: Left – Logo + Nav */}
         <div className="desktop-only" style={{ alignItems: 'center', gap: '36px' }}>
-          <div className="header-logo" onClick={() => onNavigate('home')} style={{ cursor: 'pointer' }}>
+          <Link href="/" className="header-logo" style={{ cursor: 'pointer', display: 'block' }}>
             <img src="/logo.png" alt="Luxya Boutique" style={{ width: '120px', height: 'auto', objectFit: 'contain' }} />
-          </div>
+          </Link>
           <nav className="header-desktop-nav">
-            <button
-              className={`header-desktop-nav-item ${currentPage === 'home' ? 'active' : ''}`}
-              onClick={() => onNavigate('home')}
+            <Link
+              href="/"
+              className={`header-desktop-nav-item ${pathname === '/' ? 'active' : ''}`}
             >
               {lang === 'ar' ? 'الرئيسية' : 'Accueil'}
-            </button>
-            <button
-              className={`header-desktop-nav-item ${currentPage === 'categories' ? 'active' : ''}`}
-              onClick={() => onNavigate('categories')}
+            </Link>
+            <Link
+              href="/categories"
+              className={`header-desktop-nav-item ${pathname === '/categories' ? 'active' : ''}`}
             >
               {t('sidebar.categories')}
-            </button>
-            <button
-              className={`header-desktop-nav-item ${currentPage === 'favorites' ? 'active' : ''}`}
-              onClick={() => onNavigate('favorites')}
+            </Link>
+            <Link
+              href="/favorites"
+              className={`header-desktop-nav-item ${pathname === '/favorites' ? 'active' : ''}`}
             >
               {t('nav.favorite')}
-            </button>
-            <button
-              className={`header-desktop-nav-item ${currentPage === 'contact' ? 'active' : ''}`}
-              onClick={() => onNavigate('contact')}
+            </Link>
+            <Link
+              href="/contact"
+              className={`header-desktop-nav-item ${pathname === '/contact' ? 'active' : ''}`}
             >
               {t('sidebar.contact')}
-            </button>
+            </Link>
           </nav>
         </div>
 
         {/* Mobile: Center logo */}
-        <div className="header-logo mobile-only" onClick={() => onNavigate('home')} style={{ cursor: 'pointer' }}>
+        <Link href="/" className="header-logo mobile-only" style={{ cursor: 'pointer', display: 'block' }}>
           <img src="/logo.png" alt="Luxya Boutique" style={{ width: '100px', height: 'auto', objectFit: 'contain' }} />
-        </div>
+        </Link>
 
         {/* Right side: search (desktop) + lang (desktop) + cart */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -106,16 +105,16 @@ export default function Header({ onNavigate, currentPage }: HeaderProps) {
         </div>
       </header>
 
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} onNavigate={onNavigate} />
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <CartDrawer 
         open={cartOpen} 
         onClose={() => setCartOpen(false)} 
         onCheckout={() => {
           setCartOpen(false);
-          onNavigate('checkout');
+          router.push('/checkout');
         }}
       />
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} onNavigate={onNavigate} />
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

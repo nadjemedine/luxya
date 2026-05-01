@@ -8,10 +8,9 @@ import ProductCard from './ProductCard';
 interface ProductListPageProps {
   title: string;
   filter: string;
-  onNavigate: (page: string, data?: any) => void;
 }
 
-export default function ProductListPage({ title, filter, onNavigate }: ProductListPageProps) {
+export default function ProductListPage({ title, filter }: ProductListPageProps) {
   const { lang, t } = useLang();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +45,7 @@ export default function ProductListPage({ title, filter, onNavigate }: ProductLi
         ) : (
           <div className="products-grid">
             {products.map(p => (
-              <ProductCard key={p._id} product={p} onClick={() => onNavigate('product', p)} />
+              <ProductCard key={p._id} product={p} />
             ))}
           </div>
         )}

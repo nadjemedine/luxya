@@ -4,14 +4,14 @@ import { Product } from '@/types';
 import { urlFor } from '@/lib/sanity';
 import { useLang } from '@/context/LangContext';
 import { useCart } from '@/context/CartContext';
+import { useRouter } from 'next/navigation';
 
 interface ProductDetailProps {
   product: Product;
-  onBack: () => void;
-  onNavigate: (page: string) => void;
 }
 
-export default function ProductDetail({ product, onBack, onNavigate }: ProductDetailProps) {
+export default function ProductDetail({ product }: ProductDetailProps) {
+  const router = useRouter();
   const { lang, setLang, t, isRTL } = useLang();
   const { addToCart, toggleFavorite, isFavorite } = useCart();
   const [selectedImg, setSelectedImg] = useState(0);
@@ -168,7 +168,7 @@ export default function ProductDetail({ product, onBack, onNavigate }: ProductDe
           disabled={!isCurrentlyInStock}
           onClick={() => {
             addToCart(product, 1, selectedSize || undefined, selectedColor || undefined);
-            onNavigate('checkout');
+            router.push('/checkout');
           }}
           style={{ background: 'var(--gold)', border: 'none', color: 'var(--aubergine-dark)', fontSize: '16px' }}
         >
@@ -190,7 +190,7 @@ export default function ProductDetail({ product, onBack, onNavigate }: ProductDe
     <div>
       {/* Back button */}
       <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', cursor: 'pointer',
+        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--aubergine)', fontWeight: 600 }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <polyline points="15 18 9 12 15 6" />
