@@ -9,8 +9,13 @@ import BottomNav from '@/components/layout/BottomNav';
 import Footer from '@/components/layout/Footer';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  
+  const pathname = usePathname() || '';
+  const isStudio = pathname.startsWith('/studio');
+
+  if (isStudio) {
+    return <>{children}</>;
+  }
+
   return (
     <LangProvider>
       <CartProvider>
