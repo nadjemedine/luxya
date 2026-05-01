@@ -97,9 +97,74 @@ export default function CheckoutPage() {
           {lang === 'fr' ? 'Finaliser la commande' : 'إتمام الطلب'}
         </h1>
 
-        <div className="checkout-grid">
-          {/* Delivery Form - Column 1 */}
-          <div>
+        <div className="checkout-main-container" style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {/* Main Column */}
+          <div className="checkout-content">
+            {/* New Panier Section */}
+            <h3 className="section-title" style={{ fontSize: '20px', marginBottom: '16px', textAlign: 'center', width: '100%' }}>
+              {lang === 'fr' ? 'Panier' : 'السلة'}
+            </h3>
+            <div style={{ height: '1px', background: 'var(--gray-200)', width: '100%', marginBottom: '24px' }} />
+            
+            <div className="checkout-items" style={{ marginBottom: '40px', background: 'var(--aubergine)', padding: '20px', borderRadius: 'var(--radius)', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+              {cart.map((item, index) => (
+                <div key={`${item.product._id}-${item.size}-${item.color}`} className="checkout-item" style={{ 
+                  position: 'relative', 
+                  display: 'flex',
+                  gap: '20px',
+                  borderBottom: index === cart.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                  paddingBottom: '20px',
+                  marginBottom: index === cart.length - 1 ? '0' : '20px'
+                }}>
+                  <div className="checkout-item-img" style={{ width: '80px', height: '100px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden' }}>
+                    {item.product.images?.[0] && <img src={urlFor(item.product.images[0]).width(80).url()} alt={item.product.name[lang] || item.product.name.fr} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                  </div>
+                  <div className="checkout-item-info" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                    <h4 style={{ fontSize: '15px', fontWeight: '500', marginBottom: '8px', color: 'var(--white)' }}>
+                      {item.product.name[lang] || item.product.name.fr}
+                    </h4>
+                    <div className="checkout-item-details" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: 'auto' }}>
+                      {item.size && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.size}</span>}
+                      {item.color && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.color}</span>}
+                    </div>
+                    
+                    <div className="checkout-item-actions" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '15px', marginTop: '12px' }}>
+                      <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <button 
+                          type="button"
+                          onClick={() => updateQuantity(item.product._id, item.quantity - 1, item.size, item.color)}
+                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
+                        >−</button>
+                        <span style={{ fontWeight: 'bold', fontSize: '14px', minWidth: '15px', textAlign: 'center' }}>{item.quantity}</span>
+                        <button 
+                          type="button"
+                          onClick={() => updateQuantity(item.product._id, item.quantity + 1, item.size, item.color)}
+                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
+                        >+</button>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                        <button 
+                          type="button"
+                          className="remove-btn"
+                          onClick={() => removeFromCart(item.product._id, item.size, item.color)}
+                          style={{ border: 'none', background: 'none', color: '#ff4d4f', cursor: 'pointer', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                          title={lang === 'fr' ? 'Supprimer' : 'حذف'}
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                        <span className="checkout-item-price" style={{ fontWeight: 'bold', color: 'var(--gold)', fontSize: '16px' }}>{item.product.price * item.quantity} DZD</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <h3 className="section-title" style={{ fontSize: '20px', marginBottom: '24px', textAlign: 'center', width: '100%' }}>
               {lang === 'fr' ? 'Informations de livraison' : 'معلومات التوصيل'}
             </h3>
@@ -225,68 +290,6 @@ export default function CheckoutPage() {
                 {loading ? <div className="spinner-small" /> : (lang === 'fr' ? 'Commander maintenant' : 'تأكيد الطلب الآن')}
               </button>
             </form>
-          </div>
-
-          {/* Order Summary - Column 2 */}
-          <div className="checkout-summary-card" style={{ paddingBottom: '20px' }}>
-            <div className="checkout-items">
-              {cart.map((item, index) => (
-                <div key={`${item.product._id}-${item.size}-${item.color}`} className="checkout-item" style={{ 
-                  position: 'relative', 
-                  display: 'flex',
-                  gap: '20px',
-                  borderBottom: index === cart.length - 1 ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                  paddingBottom: '20px',
-                  marginBottom: index === cart.length - 1 ? '0' : '20px'
-                }}>
-                  <div className="checkout-item-img" style={{ width: '80px', height: '100px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden' }}>
-                    {item.product.images?.[0] && <img src={urlFor(item.product.images[0]).width(80).url()} alt={item.product.name[lang] || item.product.name.fr} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
-                  </div>
-                  <div className="checkout-item-info" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-                    <h4 style={{ fontSize: '15px', fontWeight: '500', marginBottom: '8px', color: 'var(--white)' }}>
-                      {item.product.name[lang] || item.product.name.fr}
-                    </h4>
-                    <div className="checkout-item-details" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: 'auto' }}>
-                      {item.size && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.size}</span>}
-                      {item.color && <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>{item.color}</span>}
-                    </div>
-                    
-                    <div className="checkout-item-actions" style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '15px', marginTop: '12px' }}>
-                      <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '4px 12px', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <button 
-                          type="button"
-                          onClick={() => updateQuantity(item.product._id, item.quantity - 1, item.size, item.color)}
-                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
-                        >−</button>
-                        <span style={{ fontWeight: 'bold', fontSize: '14px', minWidth: '15px', textAlign: 'center' }}>{item.quantity}</span>
-                        <button 
-                          type="button"
-                          onClick={() => updateQuantity(item.product._id, item.quantity + 1, item.size, item.color)}
-                          style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '18px', color: 'white', width: '20px' }}
-                        >+</button>
-                      </div>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                        <button 
-                          type="button"
-                          className="remove-btn"
-                          onClick={() => removeFromCart(item.product._id, item.size, item.color)}
-                          style={{ border: 'none', background: 'none', color: '#ff4d4f', cursor: 'pointer', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                          title={lang === 'fr' ? 'Supprimer' : 'حذف'}
-                        >
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M3 6h18"></path>
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                          </svg>
-                        </button>
-                        <span className="checkout-item-price" style={{ fontWeight: 'bold', color: 'var(--gold)', fontSize: '16px' }}>{item.product.price * item.quantity} DZD</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
