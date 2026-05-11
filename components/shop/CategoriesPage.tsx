@@ -15,7 +15,7 @@ export default function CategoriesPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const c = await client.fetch<Category[]>(`*[_type == "category"] | order(order asc)`);
+        const c = await client.fetch<Category[]>(`*[_type == "category"]`);
         setCategories(c);
       } catch (e) {
         console.error(e);

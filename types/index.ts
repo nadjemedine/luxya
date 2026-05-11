@@ -32,7 +32,6 @@ export interface Category {
   slug: { current: string };
   description?: LocalizedString;
   image?: any;
-  order?: number;
 }
 
 export interface Banner {

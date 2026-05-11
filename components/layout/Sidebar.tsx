@@ -23,7 +23,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    client.fetch(`*[_type == "category"] | order(order asc)`).then(setCategories).catch(console.error);
+    client.fetch(`*[_type == "category"]`).then(setCategories).catch(console.error);
   }, []);
 
   return (

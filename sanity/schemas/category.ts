@@ -33,17 +33,6 @@ export default {
       type: 'image',
       options: { hotspot: true },
     },
-    {
-      name: 'order',
-      title: 'Ordre d\'affichage / ترتيب العرض',
-      type: 'number',
-    },
-    {
-      name: 'parent',
-      title: 'Catégorie parente / الفئة الأم',
-      type: 'reference',
-      to: [{ type: 'category' }],
-    },
   ],
   preview: {
     select: { title: 'name.fr', media: 'image' },
