@@ -1,9 +1,9 @@
 'use client';
-import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useLang } from '@/context/LangContext';
 import { urlFor } from '@/lib/sanity';
-import { wilayas } from '@/lib/dzData';
+import { ecotrack, Wilaya, Commune, Center } from '@/lib/ecotrack';
+import { useEffect, useState } from 'react';
 
 export default function CheckoutPage() {
   const { cart, cartTotal, clearCart, updateQuantity, removeFromCart } = useCart();
@@ -11,26 +11,94 @@ export default function CheckoutPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Dynamic data
+  const [wilayaList, setWilayaList] = useState<Wilaya[]>([]);
+  const [communeList, setCommuneList] = useState<Commune[]>([]);
+  const [centerList, setCenterList] = useState<Center[]>([]);
+  const [shippingFee, setShippingFee] = useState(0);
+
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
-    wilaya: '',
-    municipality: '',
+    wilaya_id: '',
+    commune: '',
     address: '',
     deliveryType: 'home', // 'home' | 'office'
+    center_id: '',
   });
+
+  // Fetch Wilayas on mount
+  useEffect(() => {
+    ecotrack.getWilayas().then(setWilayaList).catch(console.error);
+  }, []);
+
+  // Fetch Communes and Fees when Wilaya changes
+  useEffect(() => {
+    if (formData.wilaya_id) {
+      const wId = parseInt(formData.wilaya_id);
+      ecotrack.getCommunes(wId).then(communes => {
+        setCommuneList(communes);
+        // If getting centers fails, we'll use communes with has_stop_desk: 1
+        if (formData.deliveryType === 'office') {
+          ecotrack.getCenters(wId).then(centers => {
+            if (centers.length > 0) {
+              setCenterList(centers);
+            } else {
+              // Fallback to communes with stop desk
+              const offices = communes
+                .filter(c => c.has_stop_desk === 1)
+                .map((c, idx) => ({
+                  id: idx,
+                  name: `Bureau - ${c.nom}`,
+                  address: `Commune ${c.nom}`,
+                  phone: ''
+                }));
+              setCenterList(offices);
+            }
+          }).catch(() => {
+             // Fallback on error
+             const offices = communes
+                .filter(c => c.has_stop_desk === 1)
+                .map((c, idx) => ({
+                  id: idx,
+                  name: `Bureau - ${c.nom}`,
+                  address: `Commune ${c.nom}`,
+                  phone: ''
+                }));
+              setCenterList(offices);
+          });
+        }
+      }).catch(console.error);
+
+      ecotrack.getFees(wId).then(data => {
+        if (data && data.livraison) {
+          const wilayaFee = data.livraison.find((l: any) => l.wilaya_id === wId);
+          if (wilayaFee) {
+            const fee = formData.deliveryType === 'home' 
+              ? parseInt(wilayaFee.tarif) 
+              : parseInt(wilayaFee.tarif_stopdesk);
+            setShippingFee(fee || 0);
+          }
+        }
+      }).catch(console.error);
+    } else {
+      setCommuneList([]);
+      setCenterList([]);
+      setShippingFee(0);
+    }
+  }, [formData.wilaya_id, formData.deliveryType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.fullName.trim() || !formData.phone.trim() || !formData.wilaya || !formData.municipality.trim() || (formData.deliveryType === 'home' && !formData.address.trim())) {
-      alert(lang === 'fr' ? 'Veuillez remplir tous les champs obligatoires dans le formulaire.' : 'الرجاء ملء جميع الخانات الإلزامية في نموذج الطلب.');
+    if (!formData.fullName.trim() || !formData.phone.trim() || !formData.wilaya_id || !formData.commune || (formData.deliveryType === 'home' && !formData.address.trim()) || (formData.deliveryType === 'office' && !formData.center_id)) {
+      alert(lang === 'fr' ? 'Veuillez remplir tous les champs obligatoires.' : 'الرجاء ملء جميع الخانات الإلزامية.');
       return;
     }
 
     const phoneRegex = /^(05|06|07)\d{8}$/;
     if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
-      alert(lang === 'fr' ? 'Veuillez entrer un numéro de téléphone valide de 10 chiffres commençant par 05, 06 ou 07.' : 'يرجى إدخال رقم هاتف صحيح متكون من 10 أرقام ويبدأ بـ 05، 06، أو 07.');
+      alert(lang === 'fr' ? 'Veuillez entrer un numéro de téléphone valide.' : 'يرجى إدخال رقم هاتف صحيح.');
       return;
     }
 
@@ -41,9 +109,13 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          formData,
+          formData: {
+            ...formData,
+            wilaya: wilayaList.find(w => w.wilaya_id.toString() === formData.wilaya_id)?.wilaya_name || formData.wilaya_id,
+          },
           cart,
-          cartTotal
+          cartTotal: cartTotal + shippingFee,
+          shippingFee
         }),
       });
 
@@ -54,7 +126,7 @@ export default function CheckoutPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Order Error:', error);
-      alert(lang === 'fr' ? 'Une erreur est سورvenue lors de la commande.' : 'حدث خطأ أثناء تقديم الطلب.');
+      alert(lang === 'fr' ? 'Une erreur est سورvenue.' : 'حدث خطأ أثناء تقديم الطلب.');
     } finally {
       setLoading(false);
     }
@@ -196,39 +268,30 @@ export default function CheckoutPage() {
                   <label>{lang === 'fr' ? 'Wilaya' : 'الولاية'}</label>
                   <select 
                     required 
-                    value={formData.wilaya}
-                    onChange={(e) => setFormData({...formData, wilaya: e.target.value})}
+                    value={formData.wilaya_id}
+                    onChange={(e) => setFormData({...formData, wilaya_id: e.target.value, commune: '', center_id: ''})}
                   >
                     <option value="">{lang === 'fr' ? 'Sélectionner' : 'اختر'}</option>
-                    {wilayas.map(w => (
-                      <option key={w.id} value={w.id}>{w.id} - {lang === 'fr' ? w.fr : w.ar}</option>
+                    {wilayaList.map(w => (
+                      <option key={w.wilaya_id} value={w.wilaya_id}>{w.wilaya_id} - {w.wilaya_name}</option>
                     ))}
                   </select>
                 </div>
                 <div className="form-group">
                   <label>{lang === 'fr' ? 'Commune' : 'البلدية'}</label>
-                  <input 
-                    type="text" 
+                  <select 
                     required 
-                    placeholder={lang === 'fr' ? 'Votre commune' : 'بلديتكم'}
-                    value={formData.municipality}
-                    onChange={(e) => setFormData({...formData, municipality: e.target.value})}
-                  />
+                    value={formData.commune}
+                    onChange={(e) => setFormData({...formData, commune: e.target.value})}
+                    disabled={!formData.wilaya_id}
+                  >
+                    <option value="">{lang === 'fr' ? 'Sélectionner' : 'اختر'}</option>
+                    {communeList.map((c, i) => (
+                      <option key={i} value={c.nom}>{c.nom}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
-
-              {formData.deliveryType === 'home' && (
-                <div className="form-group" style={{ marginBottom: '20px' }}>
-                  <label>{lang === 'fr' ? 'Adresse détaillée' : 'العنوان التفصيلي'}</label>
-                  <input 
-                    type="text" 
-                    required={formData.deliveryType === 'home'} 
-                    placeholder={lang === 'fr' ? 'Votre adresse détaillée' : 'عنوانكم التفصيلي'}
-                    value={formData.address}
-                    onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  />
-                </div>
-              )}
 
               <div className="form-group">
                 <label>{lang === 'fr' ? 'Type de livraison' : 'نوع التوصيل'}</label>
@@ -256,6 +319,34 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {formData.deliveryType === 'home' ? (
+                <div className="form-group" style={{ marginBottom: '20px' }}>
+                  <label>{lang === 'fr' ? 'Adresse détaillée' : 'العنوان التفصيلي'}</label>
+                  <input 
+                    type="text" 
+                    required={formData.deliveryType === 'home'} 
+                    placeholder={lang === 'fr' ? 'Votre adresse détaillée' : 'عنوانكم التفصيلي'}
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  />
+                </div>
+              ) : (
+                <div className="form-group" style={{ marginBottom: '20px' }}>
+                  <label>{lang === 'fr' ? 'Choisir le bureau' : 'اختر المكتب'}</label>
+                  <select 
+                    required={formData.deliveryType === 'office'}
+                    value={formData.center_id}
+                    onChange={(e) => setFormData({...formData, center_id: e.target.value})}
+                    disabled={!formData.wilaya_id}
+                  >
+                    <option value="">{lang === 'fr' ? 'Sélectionner le bureau' : 'اختر المكتب'}</option>
+                    {centerList.map(center => (
+                      <option key={center.id} value={center.id}>{center.name} - {center.address}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {/* Professional Summary Section BEFORE the button */}
               <div className="checkout-final-summary" style={{ 
                 marginTop: '32px', 
@@ -274,15 +365,15 @@ export default function CheckoutPage() {
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', color: 'var(--gray-200)', gap: '10px', flexWrap: 'wrap' }}>
                   <span>{lang === 'fr' ? 'Livraison' : 'التوصيل'}</span>
-                  <span style={{ color: cartTotal >= 15000 ? 'var(--gold)' : '#4ade80', fontWeight: '500', fontSize: '13px', textAlign: isRTL ? 'left' : 'right' }}>
-                    {cartTotal >= 15000 
-                      ? (lang === 'fr' ? 'Gratuit' : 'مجاني') 
-                      : (lang === 'fr' ? 'Calculé à la confirmation' : 'يُحسب عند التأكيد')}
+                  <span style={{ color: '#4ade80', fontWeight: '500', fontSize: '13px', textAlign: isRTL ? 'left' : 'right' }}>
+                    {!formData.wilaya_id 
+                      ? (lang === 'fr' ? 'Sélectionnez une wilaya' : 'اختر الولاية')
+                      : `${shippingFee} DZD`}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
                   <span style={{ fontSize: '18px', fontWeight: 'bold' }}>{t('cart.total')}</span>
-                  <span style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--white)' }}>{cartTotal} DZD</span>
+                  <span style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--white)' }}>{cartTotal + shippingFee} DZD</span>
                 </div>
               </div>
 

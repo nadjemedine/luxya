@@ -1,12 +1,13 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { ecotrack } from '@/lib/ecotrack';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { formData, cart, cartTotal } = body;
+    const { formData, cart, cartTotal, shippingFee } = body;
 
     const itemsHtml = cart.map((item: any) => `
       <tr>
@@ -27,8 +28,9 @@ export async function POST(request: Request) {
           <h3 style="color: #333;">Informations Client</h3>
           <p><strong>Nom:</strong> ${formData.fullName}</p>
           <p><strong>Téléphone:</strong> ${formData.phone}</p>
-          <p><strong>Adresse:</strong> Wilaya ${formData.wilaya}, Commune ${formData.municipality}${formData.address ? `<br/>Détails: ${formData.address}` : ''}</p>
-          <p><strong>Type de livraison:</strong> ${formData.deliveryType === 'home' ? 'Domicile' : 'Bureau'}</p>
+          <p><strong>Adresse:</strong> Wilaya: ${formData.wilaya}, Commune: ${formData.commune}${formData.address ? `<br/>Détails: ${formData.address}` : ''}</p>
+          <p><strong>Type de livraison:</strong> ${formData.deliveryType === 'home' ? 'Domicile' : 'Bureau (Stop Desk)'}</p>
+          ${formData.center_id ? `<p><strong>ID Bureau:</strong> ${formData.center_id}</p>` : ''}
         </div>
 
         <h3 style="color: #333;">Détails de la commande</h3>
@@ -45,28 +47,53 @@ export async function POST(request: Request) {
           </tbody>
           <tfoot>
             <tr>
+              <td colspan="2" style="padding: 10px; text-align: right;">Sous-total</td>
+              <td style="padding: 10px; text-align: right;">${cartTotal - shippingFee} DZD</td>
+            </tr>
+            <tr>
+              <td colspan="2" style="padding: 10px; text-align: right;">Livraison</td>
+              <td style="padding: 10px; text-align: right;">${shippingFee} DZD</td>
+            </tr>
+            <tr>
               <td colspan="2" style="padding: 15px 10px; text-align: right; font-weight: bold;">Total</td>
               <td style="padding: 15px 10px; text-align: right; font-weight: bold; color: #611b42; font-size: 18px;">${cartTotal} DZD</td>
             </tr>
           </tfoot>
         </table>
-        
-        <p style="margin-top: 30px; font-size: 12px; color: #888; text-align: center;">
-          Cette commande a été passée depuis le site luxya.shop
-        </p>
       </div>
     `;
 
-    const data = await resend.emails.send({
+    // 1. Send Email Notification
+    await resend.emails.send({
       from: `Luxya Boutique <${process.env.RESEND_FROM}>`,
       to: (process.env.RESEND_TO || '').split(','),
       subject: `Nouvelle Commande de ${formData.fullName} - ${cartTotal} DZD`,
       html: emailHtml,
     });
 
-    return NextResponse.json({ success: true, data });
+    // 2. Create Order in EcoTrack
+    try {
+      const ecotrackOrder = {
+        nom_client: formData.fullName,
+        telephone: formData.phone,
+        adresse: formData.deliveryType === 'home' ? formData.address : `Stop Desk: ${formData.commune}`,
+        commune: formData.commune,
+        code_wilaya: parseInt(formData.wilaya_id),
+        montant: cartTotal,
+        remarque: `Type: ${formData.deliveryType === 'home' ? 'Domicile' : 'Bureau'}${formData.center_id ? `, Office ID: ${formData.center_id}` : ''}`,
+        produits: cart.map((item: any) => `${item.product.name.fr} (x${item.quantity})`).join(', '),
+        stop_desk: formData.deliveryType === 'office' ? 1 : 0,
+      };
+
+      await ecotrack.createOrder(ecotrackOrder);
+    } catch (ecotrackError) {
+      console.error('EcoTrack Integration Error:', ecotrackError);
+      // We don't fail the whole request if EcoTrack fails, but we should log it.
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Resend Error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to send email' }, { status: 500 });
+    console.error('Order Error:', error);
+    return NextResponse.json({ success: false, error: 'Failed to process order' }, { status: 500 });
   }
 }
