@@ -56,6 +56,12 @@ export default function Header() {
               {t('nav.favorite')}
             </Link>
             <Link
+              href="/track"
+              className={`header-desktop-nav-item ${pathname === '/track' ? 'active' : ''}`}
+            >
+              {lang === 'ar' ? 'تتبع الطلبية' : 'Suivi de commande'}
+            </Link>
+            <Link
               href="/contact"
               className={`header-desktop-nav-item ${pathname === '/contact' ? 'active' : ''}`}
             >

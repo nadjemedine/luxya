@@ -12,8 +12,8 @@ interface SidebarProps {
 
 const NAV_ITEMS = [
   { key: 'home', icon: '🏠', url: '/' },
-  { key: 'categories', icon: '📁', url: '/categories' },
   { key: 'favorites', icon: '❤️', url: '/favorites' },
+  { key: 'track', icon: '📦', url: '/track' },
   { key: 'contact', icon: '📩', url: '/contact' },
 ];
 
