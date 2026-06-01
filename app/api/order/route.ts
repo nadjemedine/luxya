@@ -83,6 +83,7 @@ export async function POST(request: Request) {
         remarque: `Type: ${formData.deliveryType === 'home' ? 'Domicile' : 'Bureau'}${formData.center_id ? `, Office ID: ${formData.center_id}` : ''}`,
         produits: cart.map((item: any) => `${item.product.name.fr} (x${item.quantity})`).join(', '),
         stop_desk: formData.deliveryType === 'office' ? 1 : 0,
+        type: 1, // 1 for standard delivery
       };
 
       await ecotrack.createOrder(ecotrackOrder);
