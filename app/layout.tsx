@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import ClientLayout from "@/components/layout/ClientLayout";
+import MaintenanceInquiry from "@/components/MaintenanceInquiry";
 
 export const metadata: Metadata = {
   title: "Luxya Boutique",
@@ -29,7 +30,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p style={{ fontSize: '1.125rem', color: '#4b5563', marginBottom: '32px', lineHeight: 1.6, marginTop: 0 }}>
               سيتم اطلاق المتجر بعد بضعة ايام سنعود قريباً جداً، شكراً لتفهمكم
             </p>
-            <div style={{ width: '64px', height: '4px', backgroundColor: '#c9a96e', margin: '0 auto 16px', borderRadius: '9999px' }}></div>
+            <MaintenanceInquiry />
+            <div style={{ width: '64px', height: '4px', backgroundColor: '#c9a96e', margin: '0 auto 16px', borderRadius: '9999px', marginTop: '24px' }}></div>
             <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#4a1942', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
               Luxya Boutique
             </p>
