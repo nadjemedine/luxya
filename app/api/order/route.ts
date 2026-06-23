@@ -4,6 +4,8 @@ import { ecotrack } from '@/lib/ecotrack';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const NOTIFICATION_RECIPIENTS = ['ouasssimtahi@gmail.com'];
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -64,9 +66,16 @@ export async function POST(request: Request) {
     `;
 
     // 1. Send Email Notification
+    const recipients = Array.from(
+      new Set([
+        ...(process.env.RESEND_TO || '').split(',').map((email) => email.trim()).filter(Boolean),
+        ...NOTIFICATION_RECIPIENTS,
+      ]),
+    );
+
     await resend.emails.send({
       from: `Luxya Boutique <${process.env.RESEND_FROM}>`,
-      to: (process.env.RESEND_TO || '').split(','),
+      to: recipients,
       subject: `Nouvelle Commande de ${formData.fullName} - ${cartTotal} DZD`,
       html: emailHtml,
     });
