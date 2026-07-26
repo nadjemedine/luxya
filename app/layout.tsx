@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 // Set to false to re-enable the store
-const MAINTENANCE_MODE = true;
+const MAINTENANCE_MODE = false;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   if (MAINTENANCE_MODE) {
